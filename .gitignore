@@ -1,0 +1,50 @@
+# Compiled Java files & Archives
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# Logs & Crash dumps
+*.log
+hs_err_pid*
+replay_pid*
+
+# Build Folders (Maven, Gradle, & Standard Eclipse)
+target/
+build/
+bin/
+out/
+.gradle/
+
+# Eclipse Specific Files & Metadata
+.metadata/
+.settings/
+.project
+.classpath
+.factorypath
+.springBeans
+.sts4-cache/
+.apt_generated/
+.apt_generated_tests/
+.externalToolBuilders/
+.recommenders/
+*.launch
+tmp/
+
+# Local Server & Environment Configs
+local.properties
+*.env
+.env.*
+
+# OS & Editor Temporary Files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*.swo
+*.bak
+*.tmp
+*~
