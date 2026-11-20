@@ -1,5 +1,7 @@
 package design.patterns.servlet;
 
+import java.util.List;
+
 import design.patterns.config.ConfigReader;
 import design.patterns.dal.CreateDBandTables;
 import design.patterns.dal.IGenericDao;
@@ -29,8 +31,10 @@ public class FrontController extends HttpServlet {
 		try {
 			CreateDBandTables.createDBAndTables();
 			IGenericDao dao = DependencyInject.instance.getDao();
-			dao.add(new User("john_doe", "john.doe@example.com", "John", "Doe", "password123", "123-456-7890", "123 Main St"));
-			response.getWriter().write("User added successfully");
+			//dao.add(new User("john_doe", "john.doe@example.com", "John", "Doe", "password123", "123-456-7890", "123 Main St"));
+			//User u = (User) dao.findById(User.class, 1L);
+			List<User> u = (List<User>) dao.findByKeyword(User.class, "first_name", "John");
+			response.getWriter().write("User added successfully "+u);
 
 		} catch (Exception e) {
 			e.printStackTrace();

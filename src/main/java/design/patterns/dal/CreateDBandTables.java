@@ -1,14 +1,12 @@
 package design.patterns.dal;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.Statement;
-import java.util.Map;
-import java.util.Objects;
 
 import design.patterns.config.ConfigReader;
 import design.patterns.entities.User;
+import design.patterns.utils.MapUtils;
 
 public class CreateDBandTables {
 
@@ -20,17 +18,15 @@ public class CreateDBandTables {
 	}
 
 	public static void createTableFromPersistable(Persistable persistable) throws Exception {
-		Class<?> clazz = persistable.getClass();
-		Persistable instance = (Persistable) clazz.getDeclaredConstructor().newInstance();
-		Field[] fields = clazz.getDeclaredFields();
-		StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS " + instance.tableName() + " (");
+		Field[] fields = persistable.getClass().getDeclaredFields();
+		StringBuilder sql = new StringBuilder("CREATE TABLE IF NOT EXISTS " + persistable.tableName() + " (");
 		for (int i = 0; i < fields.length; i++) {
 			Field field = fields[i];
-			if( field.getName().equals( getKeyByValue( instance.columns() ,instance.idColumn() ) ) ) {
-				sql.append(instance.idColumn()).append(" ").append(getColumnType(field.getType())).append(" AUTO_INCREMENT PRIMARY KEY").append(",");
+			if( field.getName().equals( MapUtils.getKeyByValue( persistable.columns() ,persistable.idColumn() ) ) ) {
+				sql.append(persistable.idColumn()).append(" ").append(getColumnType(field.getType())).append(" AUTO_INCREMENT PRIMARY KEY").append(",");
 				continue;
 			}
-			sql.append(instance.columns().get(field.getName())).append(" ").append(getColumnType(field.getType())).append(",");
+			sql.append(persistable.columns().get(field.getName())).append(" ").append(getColumnType(field.getType())).append(",");
 		}
 		sql.deleteCharAt(sql.length() - 1);
 		sql.append(")");
@@ -38,7 +34,43 @@ public class CreateDBandTables {
 		stmt.executeUpdate(sql.toString());
 	}
 
-	public static void createTables() {
+	public static void createDBAndTables() throws Exception {
+		createDB();
+		//createTables(); 
+		//tried creating all entities within the entities package :/
+		createTableFromPersistable(new User());
+	}
+
+	
+	//helper methods:
+	
+	// helper method to map Java types to SQL column types
+	private static String getColumnType(Class<?> type) {
+		if (type == String.class) {
+			return "VARCHAR(255)";
+		} else if (type == int.class || type == Integer.class) {
+			return "INT";
+		} else if (type == long.class || type == Long.class) {
+			return "BIGINT";
+		} else if (type == boolean.class || type == Boolean.class) {
+			return "BOOLEAN";
+		} else if (type == double.class || type == Double.class) {
+			return "DOUBLE";
+		} else if (type == float.class || type == Float.class) {
+			return "FLOAT";
+		} else if (type == java.util.Date.class) {
+			return "DATETIME";
+		} else {
+			throw new IllegalArgumentException("Unsupported field type: " + type.getName());
+		}
+	}
+	
+
+	//unused methods
+	
+	//public static void main(String[] args) {}
+	
+	/*public static void createTables() {
 		ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 		// Package entitiesPackage = Package.getPackage("entities");
 		//Package entitiesPackage = CreateDBandTables.class.getClassLoader().getDefinedPackage("entities");
@@ -65,45 +97,6 @@ public class CreateDBandTables {
 			e.printStackTrace();
 		}
 	}
-
-	public static void createDBAndTables() throws Exception {
-		createDB();
-		//createTables(); 
-		//tried creating all entities within the entities package :/
-		createTableFromPersistable(new User());
-	}
-
-	public static void main(String[] args) throws Exception {
-	}
-
-	// helper method to map Java types to SQL column types
-	private static String getColumnType(Class<?> type) {
-		if (type == String.class) {
-			return "VARCHAR(255)";
-		} else if (type == int.class || type == Integer.class) {
-			return "INT";
-		} else if (type == long.class || type == Long.class) {
-			return "BIGINT";
-		} else if (type == boolean.class || type == Boolean.class) {
-			return "BOOLEAN";
-		} else if (type == double.class || type == Double.class) {
-			return "DOUBLE";
-		} else if (type == float.class || type == Float.class) {
-			return "FLOAT";
-		} else if (type == java.util.Date.class) {
-			return "DATETIME";
-		} else {
-			throw new IllegalArgumentException("Unsupported field type: " + type.getName());
-		}
-	}
-	
-	public static <K, V> K getKeyByValue(Map<K, V> map, V targetValue) {
-        for (Map.Entry<K, V> entry : map.entrySet()) {
-            if (Objects.equals(targetValue, entry.getValue())) {
-                return entry.getKey(); // Returns the first match
-            }
-        }
-        return null; // Return null if not found
-    }
+	*/
 
 }

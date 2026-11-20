@@ -112,6 +112,13 @@ public class User implements Persistable {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+	@Override
+	public String toString() {
+		return "User [userId=" + userId + ", username=" + username + ", email=" + email + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", password=" + password + ", phoneNumber=" + phoneNumber + ", address="
+				+ address + "]";
+	}
 	
 	
 		
